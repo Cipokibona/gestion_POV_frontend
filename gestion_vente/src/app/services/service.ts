@@ -1,7 +1,8 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { tap } from 'rxjs';
+import { catchError, map, Observable, switchMap, tap, throwError } from 'rxjs';
+import { jwtDecode as jwt_decode } from 'jwt-decode';
 
 @Injectable({
   providedIn: 'root'
@@ -15,22 +16,88 @@ export class Service {
   // private url = 'https://jph.bi/api/';
 
   private tokenUrl = `${this.url}token/`;
+  private refreshUrl = `${this.url}token/refresh/`;
 
   private usersUrl = `${this.url}user/`;
 
   constructor(private router: Router) {}
 
   login(username: string, password: string) {
-    return this.http.post<{ access: string }>(this.tokenUrl, { username, password })
+    return this.http.post<{ access: string; refresh: string }>(this.tokenUrl, { username, password })
       .pipe(tap(response => {
         this.token = response.access;
         localStorage.setItem('token', this.token);
+        localStorage.setItem('refresh_token', response.refresh);
       }));
   }
 
   logout() {
     this.token = null;
     localStorage.removeItem('token');
-    this.router.navigate(['/login']);
+    localStorage.removeItem('refresh_token');
+    window.location.href = '/login';
   }
+
+  getToken(): string | null {
+    return typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+  }
+
+  getRefreshToken(): string | null {
+    return typeof window !== 'undefined' ? localStorage.getItem('refresh_token') : null;
+  }
+
+  getUser(): Observable<any> {
+  const token = this.getToken();
+  if (!token) return throwError(() => new Error('No token found'));
+
+  let decoded: any;
+  try {
+    decoded = jwt_decode(token);
+  } catch {
+    return throwError(() => new Error('Invalid token'));
+  }
+
+  const userId = decoded.user_id; // ou selon le champ de ton token
+  if (!userId) return throwError(() => new Error('User ID not found in token'));
+
+  const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+
+  return this.http.get(`${this.usersUrl}${userId}/`, { headers }).pipe(
+    catchError(error => {
+      if (error.status === 401) {
+        return this.refreshToken().pipe(
+          switchMap(() => {
+            const newToken = this.getToken();
+            if (!newToken) return throwError(() => new Error('Token refresh failed'));
+            const newHeaders = new HttpHeaders({ Authorization: `Bearer ${newToken}` });
+            return this.http.get(`${this.usersUrl}${userId}/`, { headers: newHeaders });
+          })
+        );
+      }
+      return throwError(() => error);
+    })
+  );
+}
+
+  getAllUser(): Observable<any> {
+    const token = this.getToken();
+    if (!token) {
+      return throwError(() => new Error('No token found'));
+    }
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.get<any>(`${this.usersUrl}`, {headers});
+  }
+
+  refreshToken(): Observable<void> {
+  const refreshToken = this.getRefreshToken();
+  if (!refreshToken) return throwError(() => new Error('No refresh token found'));
+
+  return this.http.post<{ access: string }>(`${this.url}token/refresh/`, { refresh: refreshToken }).pipe(
+    tap(response => {
+      localStorage.setItem('token', response.access);
+    }),
+    map(() => {}) // transforme en Observable<void>
+  );
+}
+
 }

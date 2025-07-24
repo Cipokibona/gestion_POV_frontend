@@ -31,7 +31,9 @@ export class Login {
 
       this.api.login(username, password).subscribe({
         next: () => {
-          this.router.navigate(['/home']);
+          this.router.navigate(['/home']).then(() => {
+            window.location.reload();
+          });
         },
         error: (err) => {
           this.error = err.error.detail || 'Login failed';

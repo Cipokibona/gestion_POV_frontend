@@ -1,96 +1,110 @@
-<nav class="navbar fixed-top navbar-expand-lg background principal" data-bs-theme="dark">
-  <div class="container-fluid d-flex align-items-center justify-content-between">
-    <div class="d-flex align-items-center">
-      <img class="me-2" [ngSrc]="logo" alt="logo" width="40" height="40" />
-      <h4 class="mb-0 text-light fw-bold">JHP</h4>
+<nav class="navbar fixed-top background principal" data-bs-theme="dark">
+    <div class="container-fluid">
+        <img class="me-3" [ngSrc]="logo" alt="logo" width="40" height="40">
+        <h4>JPH</h4>
+        @if (isAuthenticate) {
+        <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasDarkNavbar" aria-controls="offcanvasDarkNavbar" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>}
+        <div class="offcanvas offcanvas-end text-bg-dark background principal" tabindex="-1" id="offcanvasDarkNavbar" aria-labelledby="offcanvasDarkNavbarLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="offcanvasDarkNavbarLabel">Menu de {{userData?.username}}</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+                    <li class="nav-item">
+                        <a routerLink="home" class="nav-link active" aria-current="page" data-bs-dismiss="offcanvas">
+                            <i class="fa-solid fa-house"></i> Home
+                        </a>
+                    </li> @if (userData && (userData.role == 'gerant' || userData.role == 'responsable')) {
+                    <li class="nav-item">
+                        <a routerLink="reception" class="nav-link active" aria-current="page" data-bs-dismiss="offcanvas">
+                            <i class="fa-solid fa-hand-holding-hand"></i> Receptions
+                        </a>
+                    </li>
+                    @if (userData && userData.role == 'gerant') {
+                    <li class="nav-item">
+                        <a routerLink="userList" class="nav-link active" aria-current="page" data-bs-dismiss="offcanvas">
+                            <i class="fa-solid fa-users"></i> Users
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a routerLink="listProduct" class="nav-link active" aria-current="page" data-bs-dismiss="offcanvas">
+                            <i class="fa-solid fa-cubes-stacked"></i> Produits
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a routerLink="listTypeEchange" class="nav-link active" aria-current="page" data-bs-dismiss="offcanvas">
+                            <i class="fa-solid fa-hand-holding-dollar"></i> Type Échange
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a routerLink="listPoste" class="nav-link active" aria-current="page" data-bs-dismiss="offcanvas">
+                            <i class="fa-solid fa-users-rectangle"></i> Rôle
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a routerLink="tools" class="nav-link active" aria-current="page" data-bs-dismiss="offcanvas">
+                            <i class="fa-solid fa-car-side"></i> Matériel
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a routerLink="vente" class="nav-link active" aria-current="page" data-bs-dismiss="offcanvas">
+                            <i class="fa-brands fa-sellsy"></i> Ventes
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a routerLink="depenses" class="nav-link active" aria-current="page" data-bs-dismiss="offcanvas">
+                            <i class="fa-brands fa-sellsy"></i> Depenses
+                        </a>
+                    </li>
+                    }}
+                    <li class="nav-item">
+                        <a routerLink="liste_panier" class="nav-link active" aria-current="page" data-bs-dismiss="offcanvas">
+                            <i class="fa-solid fa-cart-shopping"></i> Paniers
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a routerLink="liste_request" class="nav-link active" aria-current="page" data-bs-dismiss="offcanvas">
+                            <i class="fa-solid fa-hand-point-up"></i> Request
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a routerLink="listPOS" class="nav-link active" aria-current="page" data-bs-dismiss="offcanvas">
+                            <i class="fa-solid fa-shop"></i> Point de vente
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a routerLink="client" class="nav-link active" aria-current="page" data-bs-dismiss="offcanvas">
+                            <i class="fa-solid fa-people-group"></i> Clients
+                        </a>
+                    </li>
+                    <li class="nav-item border-top mt-4">
+                        <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#logoutModal">
+                            <i class="fa-solid fa-door-open"></i> @if(userData){ {{userData.username}}}
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
     </div>
-
-    @if (isAuthenticate) {
-    <button
-      class="navbar-toggler border-0 shadow-none"
-      type="button"
-      data-bs-toggle="offcanvas"
-      data-bs-target="#offcanvasDarkNavbar"
-      aria-controls="offcanvasDarkNavbar"
-      aria-label="Toggle navigation"
-    >
-      <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <div
-      class="offcanvas offcanvas-end text-bg-dark background principal"
-      tabindex="-1"
-      id="offcanvasDarkNavbar"
-      aria-labelledby="offcanvasDarkNavbarLabel"
-    >
-      <div class="offcanvas-header">
-        <h5 class="offcanvas-title" id="offcanvasDarkNavbarLabel">Menu</h5>
-        <button
-          type="button"
-          class="btn-close btn-close-white"
-          data-bs-dismiss="offcanvas"
-          aria-label="Close"
-        ></button>
-      </div>
-      <div class="offcanvas-body">
-        <ul class="navbar-nav flex-column gap-2">
-          <li class="nav-item">
-            <a routerLink="home" class="nav-link active" data-bs-dismiss="offcanvas">
-              <i class="fa-solid fa-house me-2"></i> Home
-            </a>
-          </li>
-
-          @if (userData && (userData.is_admin || userData.is_respo_pos)) {
-          <li class="nav-item">
-            <a routerLink="reception" class="nav-link" data-bs-dismiss="offcanvas">
-              <i class="fa-solid fa-hand-holding-hand me-2"></i> Receptions
-            </a>
-          </li>
-          }
-
-          @if (userData?.is_admin) {
-          <li class="nav-item"><a routerLink="userList" class="nav-link" data-bs-dismiss="offcanvas"><i class="fa-solid fa-users me-2"></i> Users</a></li>
-          <li class="nav-item"><a routerLink="listProduct" class="nav-link" data-bs-dismiss="offcanvas"><i class="fa-solid fa-cubes-stacked me-2"></i> Produits</a></li>
-          <li class="nav-item"><a routerLink="listTypeEchange" class="nav-link" data-bs-dismiss="offcanvas"><i class="fa-solid fa-hand-holding-dollar me-2"></i> Type Échange</a></li>
-          <li class="nav-item"><a routerLink="listPoste" class="nav-link" data-bs-dismiss="offcanvas"><i class="fa-solid fa-users-rectangle me-2"></i> Rôle</a></li>
-          <li class="nav-item"><a routerLink="tools" class="nav-link" data-bs-dismiss="offcanvas"><i class="fa-solid fa-car-side me-2"></i> Matériel</a></li>
-          <li class="nav-item"><a routerLink="vente" class="nav-link" data-bs-dismiss="offcanvas"><i class="fa-brands fa-sellsy me-2"></i> Ventes</a></li>
-          <li class="nav-item"><a routerLink="depenses" class="nav-link" data-bs-dismiss="offcanvas"><i class="fa-brands fa-sellsy me-2"></i> Dépenses</a></li>
-          }
-
-          <li class="nav-item"><a routerLink="liste_panier" class="nav-link" data-bs-dismiss="offcanvas"><i class="fa-solid fa-cart-shopping me-2"></i> Paniers</a></li>
-          <li class="nav-item"><a routerLink="liste_request" class="nav-link" data-bs-dismiss="offcanvas"><i class="fa-solid fa-hand-point-up me-2"></i> Request</a></li>
-          <li class="nav-item"><a routerLink="listPOS" class="nav-link" data-bs-dismiss="offcanvas"><i class="fa-solid fa-shop me-2"></i> Point de vente</a></li>
-          <li class="nav-item"><a routerLink="client" class="nav-link" data-bs-dismiss="offcanvas"><i class="fa-solid fa-people-group me-2"></i> Clients</a></li>
-
-          <li class="nav-item border-top pt-3 mt-3">
-            <button
-              class="dropdown-item text-danger"
-              data-bs-toggle="modal"
-              data-bs-target="#logoutModal"
-            >
-              <i class="fa-solid fa-door-open me-2"></i> {{ userData?.username }}
-            </button>
-          </li>
-        </ul>
-      </div>
-    </div>
-    }
-  </div>
 </nav>
 
-<!-- Logout modal -->
+<!-- Modal logout -->
 <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">Confirm Logout</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body text-center">
-        <p>Are you sure you want to logout?</p>
-        <button type="button" class="btn btn-warning px-4 mt-2" (click)="logout()">Yes, Logout</button>
-      </div>
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Are you sure?</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure?
+                <button type="button" class="btn btn-warning" (click)="logout()">
+                    Yes
+                </button>
+            </div>
+        </div>
     </div>
-  </div>
 </div>

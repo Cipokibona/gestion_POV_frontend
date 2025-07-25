@@ -100,4 +100,37 @@ export class Service {
   );
 }
 
+  deleteUser(userId: number): Observable<void> {
+    const token = this.getToken();
+    if (!token) {
+      return throwError(() => new Error('No token found'));
+    }
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.delete<void>(`${this.usersUrl}${userId}/`, { headers }).pipe(
+      catchError(error => {
+        if (error.status === 401) {
+          return this.refreshToken().pipe(
+            switchMap(() => {
+              const newToken = this.getToken();
+              if (!newToken) return throwError(() => new Error('Token refresh failed'));
+              const newHeaders = new HttpHeaders({ Authorization: `Bearer ${newToken}` });
+              return this.http.delete<void>(`${this.usersUrl}${userId}/`, { headers: newHeaders });
+            })
+          );
+        }
+        return throwError(() => error);
+      })
+    );
+  }
+
+  createUser(data: any){
+    const token = this.getToken();
+    if (!token) {
+      throw new Error('No token found');
+    }
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    
+    return this.http.post<any>(this.usersUrl, data, { headers });
+  }
+
 }

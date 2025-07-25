@@ -17,8 +17,8 @@
                         <a routerLink="home" class="nav-link active" aria-current="page" data-bs-dismiss="offcanvas">
                             <i class="fa-solid fa-house"></i> Home
                         </a>
-                    </li> @if (userData && (userData.role == 'gerant' || userData.role == 'responsable')) {
-                    @if (userData && userData.role == 'gerant') {
+                    </li> @if (userData && (userData.role_display == 'gerant' || userData.role_display == 'responsable')) {
+                    @if (userData && userData.role_display == 'gerant') {
                     <li class="nav-item">
                         <a routerLink="list-users" class="nav-link active" aria-current="page" data-bs-dismiss="offcanvas">
                             <i class="fa-solid fa-users"></i> Liste des utilisateurs

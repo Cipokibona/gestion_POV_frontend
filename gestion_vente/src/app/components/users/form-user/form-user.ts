@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { Service } from '../../../services/service';
 
 @Component({
   selector: 'app-form-user',
@@ -11,21 +12,21 @@ import { RouterLink } from '@angular/router';
 export class FormUser {
   userForm: FormGroup;
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private service: Service, private router: Router) {
     this.userForm = this.fb.group({
-      nom: ['', Validators.required],
-      prenom: ['', Validators.required],
+      first_name: ['', Validators.required],
+      last_name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       tel: ['', Validators.required],
       salaire: ['', Validators.required],
       username: ['', Validators.required],
-      password: ['', [Validators.required, Validators.minLength(6)]],
+      password: ['', [Validators.required]],
       role: ['', Validators.required]
     });
   }
 
-  get nom() { return this.userForm.get('nom')!; }
-  get prenom() { return this.userForm.get('prenom')!; }
+  get first_name() { return this.userForm.get('first_name')!; }
+  get last_name() { return this.userForm.get('last_name')!; }
   get email() { return this.userForm.get('email')!; }
   get tel() { return this.userForm.get('tel')!; }
   get salaire() { return this.userForm.get('salaire')!; }
@@ -38,8 +39,15 @@ export class FormUser {
       const data = this.userForm.value;
       console.log('Nouvel utilisateur à enregistrer :', data);
 
-      // ici tu peux envoyer `data` à ton API via un UserService
-      // this.userService.createUser(data).subscribe(...)
+      this.service.createUser(data).subscribe(
+        response => {
+          this.router.navigate(['/list-users']);
+          console.log('Utilisateur créé avec succès :', response);
+        },
+        error => {
+          console.error('Erreur lors de la création de l\'utilisateur :', error);
+        }
+      );
     }
   }
 }

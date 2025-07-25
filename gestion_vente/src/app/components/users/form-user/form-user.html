@@ -4,22 +4,22 @@
   <form [formGroup]="userForm" (ngSubmit)="submit()">
     <div class="mb-3">
       <label class="form-label">Nom</label>
-      <input type="text" class="form-control" formControlName="nom" placeholder="Bizimana">
-      @if(nom.invalid && nom.touched) {
+      <input type="text" class="form-control" formControlName="first_name" placeholder="ex: Bizimana">
+      @if(first_name.invalid && first_name.touched) {
         <div class="text-danger">Le nom est requis</div>
       }
     </div>
     <div class="mb-3">
       <label class="form-label">Prenom</label>
-      <input type="text" class="form-control" formControlName="prenom" placeholder="Jean">
-      @if(prenom.invalid && prenom.touched) {
+      <input type="text" class="form-control" formControlName="last_name" placeholder="ex: Jean">
+      @if(last_name.invalid && last_name.touched) {
         <div class="text-danger">Le prenom est requis</div>
       }
     </div>
 
     <div class="mb-3">
       <label class="form-label">Email</label>
-      <input type="email" class="form-control" formControlName="email" placeholder="jean@example.com">
+      <input type="email" class="form-control" formControlName="email" placeholder="ex: jean@example.com">
       @if(email.invalid && email.touched) {
         <div class="text-danger">Un email valide est requis</div>
       }
@@ -27,7 +27,7 @@
 
     <div class="mb-3">
       <label class="form-label">Tel</label>
-      <input type="number" class="form-control" formControlName="tel" placeholder="61 000 000">
+      <input type="number" class="form-control" formControlName="tel" placeholder="ex:61 000 000">
       @if(tel.invalid && tel.touched) {
         <div class="text-danger">Le tel est requis</div>
       }
@@ -35,7 +35,7 @@
 
     <div class="mb-3">
       <label class="form-label">Salaire</label>
-      <input type="number" class="form-control" formControlName="salaire" placeholder="500,000 FBu">
+      <input type="number" class="form-control" formControlName="salaire" placeholder="ex: 500,000 FBu">
       @if(salaire.invalid && salaire.touched) {
         <div class="text-danger">Le salaire est requis</div>
       }
@@ -43,7 +43,7 @@
 
     <div class="mb-3">
       <label class="form-label">Username</label>
-      <input type="text" class="form-control" formControlName="username" placeholder="500,000 FBu">
+      <input type="text" class="form-control" formControlName="username" placeholder="ex: jdoe">
       @if(username.invalid && username.touched) {
         <div class="text-danger">Le username est requis</div>
       }

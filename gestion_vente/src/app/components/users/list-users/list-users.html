@@ -1,0 +1,38 @@
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="principal">👥 Liste des utilisateurs</h2>
+    <a routerLink="/form-user" class="button principal">
+      ➕ Ajouter un utilisateur
+    </a>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-bordered align-middle shadow-sm">
+      <thead class="background.principal text-white">
+        <tr>
+          <th>#</th>
+          <th>Nom</th>
+          <th>Email</th>
+          <th>Rôle</th>
+          <th class="text-center">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr >
+          <td>1</td>
+          <td>Charle</td>
+          <td>charle@gmail.com</td>
+          <td>Agent</td>
+          <td class="text-center">
+            <a routerLink="/form-user/1" class="btn btn-sm btn-outline-secondary me-2" >
+              ✏️ Modifier
+            </a>
+            <button class="btn btn-sm btn-outline-danger" >
+              🗑️ Supprimer
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -1,0 +1,80 @@
+<div class="container py-4">
+  <h2 class="mb-4 principal">➕ Ajouter un utilisateur</h2>
+
+  <form [formGroup]="userForm" (ngSubmit)="submit()">
+    <div class="mb-3">
+      <label class="form-label">Nom</label>
+      <input type="text" class="form-control" formControlName="nom" placeholder="Bizimana">
+      @if(nom.invalid && nom.touched) {
+        <div class="text-danger">Le nom est requis</div>
+      }
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Prenom</label>
+      <input type="text" class="form-control" formControlName="prenom" placeholder="Jean">
+      @if(prenom.invalid && prenom.touched) {
+        <div class="text-danger">Le prenom est requis</div>
+      }
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Email</label>
+      <input type="email" class="form-control" formControlName="email" placeholder="jean@example.com">
+      @if(email.invalid && email.touched) {
+        <div class="text-danger">Un email valide est requis</div>
+      }
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Tel</label>
+      <input type="number" class="form-control" formControlName="tel" placeholder="61 000 000">
+      @if(tel.invalid && tel.touched) {
+        <div class="text-danger">Le tel est requis</div>
+      }
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Salaire</label>
+      <input type="number" class="form-control" formControlName="salaire" placeholder="500,000 FBu">
+      @if(salaire.invalid && salaire.touched) {
+        <div class="text-danger">Le salaire est requis</div>
+      }
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Username</label>
+      <input type="text" class="form-control" formControlName="username" placeholder="500,000 FBu">
+      @if(username.invalid && username.touched) {
+        <div class="text-danger">Le username est requis</div>
+      }
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Mot de passe</label>
+      <input type="password" class="form-control" formControlName="password" placeholder="********">
+      @if(password.invalid && password.touched) {
+        <div class="text-danger">Le mot de passe est requis</div>
+      }
+    </div>
+
+    <div class="mb-4">
+      <label class="form-label">Rôle</label>
+      <select class="form-select" formControlName="role">
+        <option value="" disabled>Choisir un rôle</option>
+        <option value="responsable">Responsable</option>
+        <option value="agent">Agent</option>
+        <option value="gerant">Gérant</option>
+      </select>
+      @if(role.invalid && role.touched) {
+        <div class="text-danger">Le rôle est requis</div>
+      }
+    </div>
+
+    <button type="submit" class="button principal" [disabled]="userForm.invalid">
+      ✅ Créer l'utilisateur
+    </button>
+    <a routerLink="/list-users" type="button" class="button secondary ms-2">
+      🔙 Retour
+    </a>
+  </form>
+</div>

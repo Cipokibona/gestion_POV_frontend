@@ -1,0 +1,32 @@
+<div class="container py-4">
+  <h2 class="mb-4 principal">
+    Nouveau point de vente
+  </h2>
+
+  <form>
+    <div class="mb-3">
+      <label class="form-label">📍 Nom du point de vente</label>
+      <input type="text" class="form-control" formControlName="nom" placeholder="Ex: Rohero">
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">👤 Responsable</label>
+      <select class="form-select" formControlName="responsable_id">
+        <option>-- Choisir un responsable --</option>
+        <option>Jean</option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">💰 Montant initial</label>
+      <input type="number" class="form-control" formControlName="caisse" placeholder="Ex: 500000">
+    </div>
+
+    <div class="d-flex justify-content-between mt-4">
+      <button type="submit" class="button principal" [disabled]="povForm.invalid">
+        ✅ Enregistrer
+      </button>
+      <a routerLink="/list-pov" class="btn btn-outline-secondary">⬅️ Retour</a>
+    </div>
+  </form>
+</div>

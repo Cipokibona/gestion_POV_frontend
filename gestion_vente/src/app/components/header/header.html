@@ -18,15 +18,10 @@
                             <i class="fa-solid fa-house"></i> Home
                         </a>
                     </li> @if (userData && (userData.role == 'gerant' || userData.role == 'responsable')) {
-                    <li class="nav-item">
-                        <a routerLink="reception" class="nav-link active" aria-current="page" data-bs-dismiss="offcanvas">
-                            <i class="fa-solid fa-hand-holding-hand"></i> Receptions
-                        </a>
-                    </li>
                     @if (userData && userData.role == 'gerant') {
                     <li class="nav-item">
-                        <a routerLink="userList" class="nav-link active" aria-current="page" data-bs-dismiss="offcanvas">
-                            <i class="fa-solid fa-users"></i> Users
+                        <a routerLink="list-users" class="nav-link active" aria-current="page" data-bs-dismiss="offcanvas">
+                            <i class="fa-solid fa-users"></i> Liste des utilisateurs
                         </a>
                     </li>
                     <li class="nav-item">
@@ -61,17 +56,22 @@
                     </li>
                     }}
                     <li class="nav-item">
-                        <a routerLink="liste_panier" class="nav-link active" aria-current="page" data-bs-dismiss="offcanvas">
+                        <a routerLink="paniers-agent" class="nav-link active" aria-current="page" data-bs-dismiss="offcanvas">
                             <i class="fa-solid fa-cart-shopping"></i> Paniers
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a routerLink="liste_request" class="nav-link active" aria-current="page" data-bs-dismiss="offcanvas">
+                        <a routerLink="list-request" class="nav-link active" aria-current="page" data-bs-dismiss="offcanvas">
                             <i class="fa-solid fa-hand-point-up"></i> Request
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a routerLink="listPOS" class="nav-link active" aria-current="page" data-bs-dismiss="offcanvas">
+                        <a routerLink="reception" class="nav-link active" aria-current="page" data-bs-dismiss="offcanvas">
+                            <i class="fa-solid fa-hand-holding-hand"></i> Receptions
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a routerLink="list-pov" class="nav-link active" aria-current="page" data-bs-dismiss="offcanvas">
                             <i class="fa-solid fa-shop"></i> Point de vente
                         </a>
                     </li>

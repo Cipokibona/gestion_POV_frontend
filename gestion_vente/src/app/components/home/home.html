@@ -1,1 +1,16 @@
-<p>home works!</p>
+@if(userData){
+  @if(userData?.role === 'gerant') {
+    <app-gerant />
+  }@else if(userData?.role === 'responsable') {
+    <app-responsable />
+  }@else{
+    <app-agent />
+  }
+}@else{
+  <p class="text-center">Chargement des données utilisateur...</p>
+  <div class="d-flex justify-content-center">
+  <div class="spinner-border" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
+}

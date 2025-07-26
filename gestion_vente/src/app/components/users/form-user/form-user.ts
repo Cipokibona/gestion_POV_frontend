@@ -101,4 +101,29 @@ export class FormUser implements OnInit{
     }
   }
 
+  mapDisplayToRole(display: string): string {
+    const clean = display?.trim().toLowerCase();
+    switch (clean) {
+      case 'agent':
+        return 'agent';
+      case 'responsable':
+        return 'responsable';
+      case 'gérant':
+      case 'gerant':
+        return 'gerant';
+      default:
+        return '';
+    }
+  }
+
+  patchUserFormWithDisplayRole(user: any) {
+    const role = this.mapDisplayToRole(user.role_display);
+    setTimeout(() => {
+      this.userForm.patchValue({
+        ...user,
+        role: role
+      });
+    });
+  }
+
 }

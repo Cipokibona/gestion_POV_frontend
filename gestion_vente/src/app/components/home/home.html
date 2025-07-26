@@ -1,7 +1,7 @@
 @if(userData){
-  @if(userData?.role === 'gerant') {
+  @if(userData?.role_display === 'gerant') {
     <app-gerant />
-  }@else if(userData?.role === 'responsable') {
+  }@else if(userData?.role_display === 'responsable') {
     <app-responsable />
   }@else{
     <app-agent />

@@ -3,7 +3,7 @@
     Nouveau point de vente
   </h2>
 
-  <form>
+  <form [formGroup]="povForm" (ngSubmit)="onSubmit()">
     <div class="mb-3">
       <label class="form-label">📍 Nom du point de vente</label>
       <input type="text" class="form-control" formControlName="nom" placeholder="Ex: Rohero">
@@ -11,9 +11,11 @@
 
     <div class="mb-3">
       <label class="form-label">👤 Responsable</label>
-      <select class="form-select" formControlName="responsable_id">
-        <option>-- Choisir un responsable --</option>
-        <option>Jean</option>
+      <select class="form-select" formControlName="responsable">
+        <option value="" disabled selected>Choisir un responsable</option>
+        @for(responsable of responsables; track responsable.id) {
+          <option [value]="responsable.id">{{ responsable.first_name }} {{ responsable.last_name }}</option>
+        }
       </select>
     </div>
 
@@ -25,11 +27,6 @@
     <div class="mb-3">
       <label class="form-label">📞 Téléphone</label>
       <input type="text" class="form-control" formControlName="tel" placeholder="Ex: 61 000 000">
-    </div>
-    
-    <div class="mb-3">
-      <label class="form-label">💰 Montant initial</label>
-      <input type="number" class="form-control" formControlName="caisse" placeholder="Ex: 500000">
     </div>
 
     <div class="d-flex justify-content-between mt-4">

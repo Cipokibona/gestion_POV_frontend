@@ -16,7 +16,7 @@
               <span class="badge bg-secondary px-3 py-2">Tel: {{ pov.tel }}</span>
             </div>
 
-            <p class="mb-1">💰 <strong>Caisse :</strong> {{ pov.caisse }} FBu</p>
+            <p class="mb-1">💰 <strong>Caisse :</strong> {{ pov.caisse?.montant_total | number:'1.0-2' }} FBu</p>
             <p class="mb-1">
               📦 <strong>Stock :</strong> {{ pov.stock.length }} produits
             </p>

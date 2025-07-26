@@ -88,6 +88,52 @@ export class Service {
     return this.http.get<any>(`${this.usersUrl}`, {headers});
   }
 
+  getUserById(userId: string): Observable<any> {
+    const token = this.getToken();
+    if (!token) {
+      return throwError(() => new Error('No token found'));
+    }
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.get<any>(`${this.usersUrl}${userId}/`, { headers }).pipe(
+      catchError(error => {
+        if (error.status === 401) {
+          return this.refreshToken().pipe(
+            switchMap(() => {
+              const newToken = this.getToken();
+              if (!newToken) return throwError(() => new Error('Token refresh failed'));
+              const newHeaders = new HttpHeaders({ Authorization: `Bearer ${newToken}` });
+              return this.http.get<any>(`${this.usersUrl}${userId}/`, { headers: newHeaders });
+            })
+          );
+        }
+        return throwError(() => error);
+      })
+    );
+  }
+
+  updateUser(userId: string, data: any): Observable<any> {
+    const token = this.getToken();
+    if (!token) {
+      return throwError(() => new Error('No token found'));
+    }
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.put<any>(`${this.usersUrl}${userId}/`, data, { headers }).pipe(
+      catchError(error => {
+        if (error.status === 401) {
+          return this.refreshToken().pipe(
+            switchMap(() => {
+              const newToken = this.getToken();
+              if (!newToken) return throwError(() => new Error('Token refresh failed'));
+              const newHeaders = new HttpHeaders({ Authorization: `Bearer ${newToken}` });
+              return this.http.put<any>(`${this.usersUrl}${userId}/`, data, { headers: newHeaders });
+            })
+          );
+        }
+        return throwError(() => error);
+      })
+    );
+  }
+
   refreshToken(): Observable<void> {
   const refreshToken = this.getRefreshToken();
   if (!refreshToken) return throwError(() => new Error('No refresh token found'));
@@ -129,7 +175,7 @@ export class Service {
       throw new Error('No token found');
     }
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    
+
     return this.http.post<any>(this.usersUrl, data, { headers });
   }
 

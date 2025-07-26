@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Service } from '../../../services/service';
 
 @Component({
@@ -9,10 +9,18 @@ import { Service } from '../../../services/service';
   templateUrl: './form-user.html',
   styleUrl: './form-user.scss'
 })
-export class FormUser {
+export class FormUser implements OnInit{
   userForm: FormGroup;
 
-  constructor(private fb: FormBuilder, private service: Service, private router: Router) {
+  userId: string | null = null;
+  userData: any;
+
+  constructor(
+    private fb: FormBuilder,
+    private service: Service,
+    private router: Router,
+    private route: ActivatedRoute
+  ) {
     this.userForm = this.fb.group({
       first_name: ['', Validators.required],
       last_name: ['', Validators.required],
@@ -24,6 +32,30 @@ export class FormUser {
       role: ['', Validators.required]
     });
   }
+
+  ngOnInit() {
+  const idParam = this.route.snapshot.paramMap.get('id');
+  if (idParam) {
+    this.userId = idParam;
+
+    this.service.getUserById(this.userId).subscribe(
+      user => {
+        if (user) {
+          this.userForm.patchValue(user);
+
+          // Si le champ password existe dans le form, on supprime les validateurs
+          if (this.userForm.contains('password')) {
+            this.password.clearValidators();
+            this.password.updateValueAndValidity();
+          }
+        }
+      },
+      error => {
+        console.error('Erreur lors du chargement de l’utilisateur :', error);
+      }
+    );
+  }
+}
 
   get first_name() { return this.userForm.get('first_name')!; }
   get last_name() { return this.userForm.get('last_name')!; }
@@ -37,17 +69,36 @@ export class FormUser {
   submit() {
     if (this.userForm.valid) {
       const data = this.userForm.value;
-      console.log('Nouvel utilisateur à enregistrer :', data);
 
-      this.service.createUser(data).subscribe(
-        response => {
-          this.router.navigate(['/list-users']);
-          console.log('Utilisateur créé avec succès :', response);
-        },
-        error => {
-          console.error('Erreur lors de la création de l\'utilisateur :', error);
-        }
-      );
+      // Si on est en édition, on supprime le champ password s’il est vide
+      if (this.userId && !data.password) {
+        delete data.password;
+      }
+
+      if (this.userId) {
+        // Mode édition
+        this.service.updateUser(this.userId, data).subscribe(
+          response => {
+            console.log('Utilisateur modifié avec succès :', response);
+            this.router.navigate(['/list-users']);
+          },
+          error => {
+            console.error('Erreur lors de la modification :', error);
+          }
+        );
+      } else {
+        // Mode création
+        this.service.createUser(data).subscribe(
+          response => {
+            console.log('Utilisateur créé avec succès :', response);
+            this.router.navigate(['/list-users']);
+          },
+          error => {
+            console.error('Erreur lors de la création :', error);
+          }
+        );
+      }
     }
   }
+
 }

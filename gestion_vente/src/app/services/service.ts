@@ -18,7 +18,11 @@ export class Service {
   private tokenUrl = `${this.url}token/`;
   private refreshUrl = `${this.url}token/refresh/`;
 
+  // URL pour les utilisateurs
   private usersUrl = `${this.url}user/`;
+
+  // URL pour les points de vente
+  private povUrl = `${this.url}point-de-vente/`;
 
   constructor(private router: Router) {}
 
@@ -38,6 +42,7 @@ export class Service {
     window.location.href = '/login';
   }
 
+  // token getter
   getToken(): string | null {
     return typeof window !== 'undefined' ? localStorage.getItem('token') : null;
   }
@@ -46,6 +51,7 @@ export class Service {
     return typeof window !== 'undefined' ? localStorage.getItem('refresh_token') : null;
   }
 
+  // Récupérer l'utilisateur actuel à partir du token
   getUser(): Observable<any> {
   const token = this.getToken();
   if (!token) return throwError(() => new Error('No token found'));
@@ -177,6 +183,16 @@ export class Service {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
     return this.http.post<any>(this.usersUrl, data, { headers });
+  }
+
+  // Méthode pour récupérer les points de vente
+  getAllPov(): Observable<any> {
+    const token = this.getToken();
+    if (!token) {
+      return throwError(() => new Error('No token found'));
+    }
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.get<any>(`${this.povUrl}`, { headers });
   }
 
 }

@@ -291,4 +291,73 @@ export class Service {
     );
   }
 
+  getClientById(clientId: string): Observable<any> {
+    const token = this.getToken();
+    if (!token) {
+      return throwError(() => new Error('No token found'));
+    }
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.get<any>(`${this.clientsUrl}${clientId}/`, { headers }).pipe(
+      catchError(error => {
+        if (error.status === 401) {
+          return this.refreshToken().pipe(
+            switchMap(() => {
+              const newToken = this.getToken();
+              if (!newToken) return throwError(() => new Error('Token refresh failed'));
+              const newHeaders = new HttpHeaders({ Authorization: `Bearer ${newToken}` });
+              return this.http.get<any>(`${this.clientsUrl}${clientId}/`, { headers: newHeaders });
+            })
+          );
+        }
+        return throwError(() => error);
+      })
+    );
+  }
+
+  updateClient(clientId: string, data: any): Observable<any> {
+    const token = this.getToken();
+    if (!token) {
+      return throwError(() => new Error('No token found'));
+    }
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.put<any>(`${this.clientsUrl}${clientId}/`, data, { headers }).pipe(
+      catchError(error => {
+        if (error.status === 401) {
+          return this.refreshToken().pipe(
+            switchMap(() => {
+              const newToken = this.getToken();
+              if (!newToken) return throwError(() => new Error('Token refresh failed'));
+              const newHeaders = new HttpHeaders({ Authorization: `Bearer ${newToken}` });
+              return this.http.put<any>(`${this.clientsUrl}${clientId}/`, data, { headers: newHeaders });
+            })
+          );
+        }
+        return throwError(() => error);
+      })
+    );
+  }
+
+  createClient(data: any): Observable<any> {
+    const token = this.getToken();
+    if (!token) {
+      return throwError(() => new Error('No token found'));
+    }
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.post<any>(this.clientsUrl, data, { headers }).pipe(
+      catchError(error => {
+        if (error.status === 401) {
+          return this.refreshToken().pipe(
+            switchMap(() => {
+              const newToken = this.getToken();
+              if (!newToken) return throwError(() => new Error('Token refresh failed'));
+              const newHeaders = new HttpHeaders({ Authorization: `Bearer ${newToken}` });
+              return this.http.post<any>(this.clientsUrl, data, { headers: newHeaders });
+            })
+          );
+        }
+        return throwError(() => error);
+      })
+    );
+  }
+
 }

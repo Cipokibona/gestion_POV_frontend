@@ -11,7 +11,7 @@
 
     <div class="mb-3">
       <label class="form-label">👤 Responsable</label>
-      <select class="form-select" formControlName="responsable">
+      <select class="form-select" formControlName="responsable_id">
         <option value="" disabled selected>Choisir un responsable</option>
         @for(responsable of responsables; track responsable.id) {
           <option [value]="responsable.id">{{ responsable.first_name }} {{ responsable.last_name }}</option>
@@ -30,8 +30,13 @@
     </div>
 
     <div class="d-flex justify-content-between mt-4">
-      <button type="submit" class="button principal" [disabled]="povForm.invalid">
-        ✅ Enregistrer
+      <button type="submit" class="button principal" [disabled]="povForm.invalid || isLoading">
+        @if(isLoading) {
+          <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        }@else {
+          <span>✅</span>
+        }
+        {{ povId ? 'Mettre à jour' : 'Créer' }}
       </button>
       <a routerLink="/list-pov" class="btn btn-outline-secondary">⬅️ Retour</a>
     </div>

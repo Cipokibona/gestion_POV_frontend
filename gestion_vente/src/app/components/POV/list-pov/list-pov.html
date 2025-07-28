@@ -20,7 +20,10 @@
             <p class="mb-1">
               📦 <strong>Stock :</strong> {{ pov.stock.length }} produits
             </p>
-            <p class="mb-2">👤 <strong>Responsable :</strong> {{ pov.responsable }}</p>
+            <p class="mb-2">
+              👤 <strong>Responsable :</strong>
+               {{ pov?.responsable?.user?.first_name }} {{ pov?.responsable?.user?.last_name }}
+            </p>
 
             <div class="text-end mt-3">
               <a [routerLink]="['/list-pov', pov.id]" class="button secondary btn-sm">

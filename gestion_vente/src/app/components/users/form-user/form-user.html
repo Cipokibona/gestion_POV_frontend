@@ -70,8 +70,13 @@
       }
     </div>
 
-    <button type="submit" class="button principal" [disabled]="userForm.invalid">
-      ✅ Créer l'utilisateur
+    <button type="submit" class="button principal" [disabled]="userForm.invalid || isLoading">
+      @if(isLoading) {
+        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+      }@else {
+        <span>✅</span>
+      }
+      {{ userId ? 'Mettre à jour' : 'Créer' }}
     </button>
     <a routerLink="/list-users" type="button" class="button secondary ms-2">
       🔙 Retour

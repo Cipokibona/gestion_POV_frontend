@@ -15,6 +15,8 @@ export class FormUser implements OnInit{
   userId: string | null = null;
   userData: any;
 
+  isLoading = false;
+
   constructor(
     private fb: FormBuilder,
     private service: Service,
@@ -68,6 +70,8 @@ export class FormUser implements OnInit{
 
   submit() {
     if (this.userForm.valid) {
+      this.isLoading = true;
+      this.userForm.markAllAsTouched();
       const data = this.userForm.value;
 
       // Si on est en édition, on supprime le champ password s’il est vide
@@ -83,6 +87,8 @@ export class FormUser implements OnInit{
             this.router.navigate(['/list-users']);
           },
           error => {
+            this.isLoading = false;
+            this.userForm.markAsPristine();
             console.error('Erreur lors de la modification :', error);
           }
         );
@@ -94,6 +100,8 @@ export class FormUser implements OnInit{
             this.router.navigate(['/list-users']);
           },
           error => {
+            this.isLoading = false;
+            this.userForm.markAsPristine();
             console.error('Erreur lors de la création :', error);
           }
         );

@@ -1,0 +1,64 @@
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="principal">👥 Liste des Clients</h2>
+    <a routerLink="/form-client" class="button principal">
+      ➕ Ajouter un client
+    </a>
+  </div>
+
+  @if (clients && clients.length > 0) {
+    <div class="row g-4">
+      @for (client of clients; track client.id) {
+        <div class="col-md-6 col-lg-4">
+          <div class="card shadow-sm p-3 background.info-principal rounded-4">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <h5 class="principal mb-0">
+                {{ client.first_name }} {{ client.nom }}
+              </h5>
+              <span class="badge bg-dark px-3 py-2">📞 {{ client.telephone }}</span>
+            </div>
+
+            <p class="mb-1">🏠 <strong>Adresse :</strong> {{ client.adress }}</p>
+
+            <p class="mb-1">
+              💰 <strong>Dette :</strong>
+              <span [ngClass]="{
+                'text-danger fw-bold': client.dette > 0,
+                'text-success fw-bold': client.dette == 0
+              }">
+                {{ client.dette | number: '1.0-0' }} FBu
+              </span>
+            </p>
+
+            @if (client.dette > 0) {
+              <p class="mb-1">
+                🗓️ <strong>Date de paiement prévue :</strong>
+                {{ client.date_payement | date:'mediumDate' }}
+              </p>
+
+            <div class="text-end mt-3">
+              <a
+                [routerLink]="['/detail-client', client.id]"
+                class="button secondary btn-sm"
+              >
+                💵 Faire un recouvrement
+              </a>
+            </div>
+          }
+          </div>
+        </div>
+      }
+    </div>
+  }
+  @else if (isLoading) {
+    <div class="text-center">
+      <p class="mb-3">Chargement des clients...</p>
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  }
+  @else {
+    <p class="text-center mt-4 text-muted">Aucun client trouvé.</p>
+  }
+</div>

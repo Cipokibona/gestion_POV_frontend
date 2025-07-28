@@ -9,6 +9,7 @@ import { ListPov } from './components/POV/list-pov/list-pov';
 import { DetailPov } from './components/POV/detail-pov/detail-pov';
 import { FormPov } from './components/POV/form-pov/form-pov';
 import { ListDistributeur } from './components/distributeur/list-distributeur/list-distributeur';
+import { ListClients } from './components/clients/list-clients/list-clients';
 
 export const routes: Routes = [
   {
@@ -75,5 +76,11 @@ export const routes: Routes = [
         path:'list-request',
         title: 'Request Agent',
         component: ListRequests,
+      },
+
+      {
+        path:'list-clients',
+        title: 'Liste des clients',
+        component: ListClients,
       },
 ];

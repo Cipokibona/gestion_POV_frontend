@@ -28,7 +28,6 @@ export class FormPov {
       responsable: ['', Validators.required],
       adresse: ['', Validators.required],
       tel: ['', Validators.required],
-      caisse: ['', Validators.required]
     });
   }
 
@@ -58,7 +57,6 @@ export class FormPov {
   get nom() { return this.povForm.get('nom')!; }
   get adresse() { return this.povForm.get('adresse')!; }
   get tel() { return this.povForm.get('tel')!; }
-  get caisse() { return this.povForm.get('caisse')!; }
 
   loadResponsables() {
     this.service.getAllUser().subscribe({

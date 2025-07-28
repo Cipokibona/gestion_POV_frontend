@@ -8,6 +8,7 @@ import { FormUser } from './components/users/form-user/form-user';
 import { ListPov } from './components/POV/list-pov/list-pov';
 import { DetailPov } from './components/POV/detail-pov/detail-pov';
 import { FormPov } from './components/POV/form-pov/form-pov';
+import { ListDistributeur } from './components/distributeur/list-distributeur/list-distributeur';
 
 export const routes: Routes = [
   {
@@ -59,6 +60,11 @@ export const routes: Routes = [
         path:'form-pov/:id',
         title: 'Modifier un point de vente',
         component: FormPov,
+      },
+      {
+        path:'list-distributeurs',
+        title: 'Liste des distributeurs',
+        component: ListDistributeur,
       },
       {
         path:'paniers-agent',

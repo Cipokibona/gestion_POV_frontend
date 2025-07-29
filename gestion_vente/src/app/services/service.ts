@@ -27,6 +27,9 @@ export class Service {
   // URL pour les clients
   private clientsUrl = `${this.url}client/`;
 
+  // URL pour les demandes
+  private requestsUrl = `${this.url}requete-produit/`;
+
   constructor(private router: Router) {}
 
   login(username: string, password: string) {
@@ -352,6 +355,29 @@ export class Service {
               if (!newToken) return throwError(() => new Error('Token refresh failed'));
               const newHeaders = new HttpHeaders({ Authorization: `Bearer ${newToken}` });
               return this.http.post<any>(this.clientsUrl, data, { headers: newHeaders });
+            })
+          );
+        }
+        return throwError(() => error);
+      })
+    );
+  }
+
+  getRequests(): Observable<any> {
+    const token = this.getToken();
+    if (!token) {
+      return throwError(() => new Error('No token found'));
+    }
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.get<any>(this.requestsUrl, { headers }).pipe(
+      catchError(error => {
+        if (error.status === 401) {
+          return this.refreshToken().pipe(
+            switchMap(() => {
+              const newToken = this.getToken();
+              if (!newToken) return throwError(() => new Error('Token refresh failed'));
+              const newHeaders = new HttpHeaders({ Authorization: `Bearer ${newToken}` });
+              return this.http.get<any>(this.requestsUrl, { headers: newHeaders });
             })
           );
         }

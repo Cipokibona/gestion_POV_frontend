@@ -1,1 +1,62 @@
-<p>list-requests works!</p>
+<div class="container mt-4">
+  <h4 class="mb-3">Liste des Requests</h4>
+
+  @if (isLoading) {
+    <div class="text-center">
+      <div class="spinner-border" role="status">
+        <span class="visually-hidden">Chargement...</span>
+      </div>
+    </div>
+  } @else if (errorPage) {
+    <div class="alert alert-danger">
+      Une erreur est survenue lors du chargement des demandes.
+    </div>
+  } @else if (requests.length === 0) {
+    <div class="alert alert-info">
+      Aucune demande trouvée.
+    </div>
+  } @else {
+    <div class="alert alert-info">
+      {{ requests.length }} demande(s) trouvée(s).
+    </div>
+
+    @for (request of requests; track request.id) {
+      <div class="card mb-3">
+        <div class="card-body">
+          <div class="row align-items-start">
+            <div class="col-md-4">
+              <p class="mb-1"><strong>Agent :</strong> {{ request.agent_nom }} {{ request.agent_prenom }}</p>
+              <p class="mb-1"><strong>POS :</strong> {{ request.point_de_vente_nom }}</p>
+              <small class="text-muted">Date : {{ request.date | date: 'dd/MM/yyyy HH:mm' }}</small>
+            </div>
+
+            <div class="col-md-5">
+              <p class="fw-bold mb-2">Produits demandés :</p>
+              @for (produit of request.produits; track produit.id) {
+                <div class="mb-2 border-start ps-2">
+                  <p class="mb-0"><strong>{{ produit.produit_nom }}</strong></p>
+                  <p class="mb-0">Prix vente : {{ produit.prix_vente | number:'1.0-0' }} FBu</p>
+                  <p class="mb-0">Quantité : {{ produit.quantite }}</p>
+                </div>
+              }
+            </div>
+
+            <div class="col-md-3 text-end">
+              <span class="badge"
+                [ngClass]="{
+                  'bg-warning text-dark': request.etat === 'en_attente',
+                  'bg-success': request.etat === 'acceptee',
+                  'bg-danger': request.etat === 'refusee'
+                }">
+                {{ request.etat.replace('_', ' ') }}
+              </span>
+              <div class="mt-2">
+                <button class="btn btn-sm btn-outline-primary">Détails</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  }
+</div>

@@ -204,6 +204,10 @@ openEditModal(distributeur: any) {
     console.log('Supprimer', item);
   }
 
+  listAchat(item: any) {
+    console.log('Liste achat pour', item);
+  }
+
   supprimer(item: any) {
     this.isLoading = true;
     this.service.deleteDistributeur(item).subscribe({

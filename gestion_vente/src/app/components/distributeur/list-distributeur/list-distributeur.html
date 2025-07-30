@@ -45,8 +45,12 @@
                       [columns]="[
                         { key: 'nom', label: 'Nom' },
                         { key: 'description', label: 'Description' }
-                      ]">
+                      ]"
+                      (achat)="listAchat($event)">
                     </app-list-achat>
+                    <button type="button" class="btn btn-sm btn-success m-2" (click)="faireAchat()">
+                      Finaliser l'achat
+                    </button>
                     }@else {
                       <app-list
                         [data]="dist.produits"

@@ -21,6 +21,8 @@ export class ListDistributeur implements OnInit{
 
   isLoading = false;
 
+  selectedProductId: number | null = null;
+
 openCreateModal() {
   this.isEditMode = false;
   this.editedDistributeurId = null;
@@ -175,7 +177,28 @@ openEditModal(distributeur: any) {
 
   modifier(item: any) {
     console.log('Modifier', item);
-    // ouvre modal ou navigation
+    this.isEditMode = true;
+    this.selectedProductId = item.id;
+
+    // On vide le FormArray actuel
+    this.products.clear();
+
+    // On ajoute un seul produit avec les valeurs de l’item
+    this.products.push(this.fb.group({
+      name: [item.nom, Validators.required],
+      description: [item.description, Validators.required]
+    }));
+
+    // Ouvrir le modal Bootstrap
+    const modalElement = document.getElementById('createProductModal');
+    if (modalElement && (window as any).bootstrap) {
+      const modal = new (window as any).bootstrap.Modal(modalElement);
+      modal.show();
+    }
+  }
+
+  supprimerProduit(item: any) {
+    console.log('Supprimer', item);
   }
 
   supprimer(item: any) {

@@ -23,7 +23,7 @@
                     <div class="d-flex align-items-center justify-content-between">
                       <h2>{{ dist.nom }}</h2>
                       <div>
-                        <button type="button" class="btn btn-sm btn-warning mr-2" data-bs-toggle="modal" data-bs-target="#createDistributeur" (click)="openEditModal(dist)">Modifier</button>
+                        <button type="button" class="btn btn-sm btn-warning m-2" data-bs-toggle="modal" data-bs-target="#createDistributeur" (click)="openEditModal(dist)">Modifier</button>
                         <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" [attr.data-bs-target]="'#deleteConfirm' + $index">Supprimer</button>
                       </div>
                     </div>
@@ -43,7 +43,7 @@
                         { key: 'description', label: 'Description' }
                       ]"
                       (edit)="modifier($event)"
-                      (delete)="supprimer($event)">
+                      (delete)="supprimerProduit($event)">
                     </app-list>
 
                     <button type="button" class="btn btn-warning rounded-pill m-1 p-1" data-bs-toggle="modal" [attr.data-bs-target]="'#createProduct' + $index">
@@ -88,7 +88,12 @@
                             Supprimer une ligne
                           </button>
 
-                          <button type="submit" class="btn btn-success" [disabled]="products.length === 0">
+                          <button type="submit" class="btn btn-success" [disabled]="products.length === 0 || isLoading">
+                            @if (isLoading) {
+                              <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            } @else {
+                              <span>✅</span>
+                            }
                             🟢 Créer
                           </button>
                         </div>
@@ -111,7 +116,7 @@
                     </div>
                     <div class="modal-footer">
                       <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                      <button type="button" class="btn btn-danger" data-bs-dismiss="modal" (click)="supprimer(dist)" [disabled]="isLoading">
+                      <button type="button" class="btn btn-danger" data-bs-dismiss="modal" (click)="supprimer(dist.id)" [disabled]="isLoading">
                         @if (isLoading) { Suppression... } @else { Supprimer }
                       </button>
                     </div>
@@ -157,7 +162,12 @@
               <input type="text" class="form-control" formControlName="telephone" id="tel" placeholder="Téléphone" required>
             </div>
             <div class="mt-3">
-              <button type="submit" class="btn btn-primary w-100" [disabled]="!distributeurForm.valid">
+              <button type="submit" class="btn btn-primary w-100" [disabled]="!distributeurForm.valid || isLoading">
+                @if (isLoading) {
+                  <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                } @else {
+                  <span>✅</span>
+                }
                 {{ isEditMode ? 'Mettre à jour' : 'Créer' }}
               </button>
             </div>

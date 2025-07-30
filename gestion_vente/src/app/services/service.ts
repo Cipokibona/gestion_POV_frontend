@@ -23,12 +23,16 @@ export class Service {
 
   // URL pour les points de vente
   private povUrl = `${this.url}point-de-vente/`;
-
-  // URL pour les clients
+   // URL pour les clients
   private clientsUrl = `${this.url}client/`;
 
   // URL pour les demandes
   private requestsUrl = `${this.url}requete-produit/`;
+
+   // URL pour les distributeurs
+  private distributeursUrl = `${this.url}distributeur/`;
+  private productUrl = `${this.url}produit/`;
+
 
   constructor(private router: Router) {}
 
@@ -270,7 +274,7 @@ export class Service {
     );
   }
 
-  // Methode pour client
+   // Methode pour client
   getClients(): Observable<any> {
     const token = this.getToken();
     if (!token) {
@@ -386,4 +390,109 @@ export class Service {
     );
   }
 
+
+  // DISTRIBUTEURS
+  getDistributeurs(): Observable<any[]> {
+  const token = this.getToken();
+  if (!token) {
+    return throwError(() => new Error('No token found'));
+  }
+  const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+  return this.http.get<any[]>(`${this.distributeursUrl}`, { headers }).pipe(
+    catchError(error => {
+      if (error.status === 401) {
+        return this.refreshToken().pipe(
+          switchMap(() => {
+            const newToken = this.getToken();
+            if (!newToken) return throwError(() => new Error('Token refresh failed'));
+            const newHeaders = new HttpHeaders({ Authorization: `Bearer ${newToken}` });
+            return this.http.get<any[]>(`${this.distributeursUrl}`, { headers: newHeaders });
+          })
+        );
+      }
+      return throwError(() => error);
+    })
+  );
+}
+
+  createDistributeur(data: any){
+    const token = this.getToken();
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.post<any>(`${this.distributeursUrl}`, data, {headers});
+  }
+
+  updateDistributeur(distributeurId: number, data: any): Observable<any> {
+        const token = this.getToken();
+    if (!token) {
+      return throwError(() => new Error('No token found'));
+    }
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.put<any>(`${this.distributeursUrl}${distributeurId}/`, data, { headers }).pipe(
+      catchError(error => {
+        if (error.status === 401) {
+          return this.refreshToken().pipe(
+            switchMap(() => {
+              const newToken = this.getToken();
+              if (!newToken) return throwError(() => new Error('Token refresh failed'));
+              const newHeaders = new HttpHeaders({ Authorization: `Bearer ${newToken}` });
+              return this.http.put<any>(`${this.distributeursUrl}${distributeurId}/`, data, { headers: newHeaders });
+            })
+          );
+        }
+        return throwError(() => error);
+      })
+    );
+  }
+
+   deleteDistributeur(distributeurId: number): Observable<void> {
+    const token = this.getToken();
+    if (!token) {
+      return throwError(() => new Error('No token found'));
+    }
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.delete<void>(`${this.distributeursUrl}${distributeurId}/`, { headers }).pipe(
+      catchError(error => {
+        if (error.status === 401) {
+          return this.refreshToken().pipe(
+            switchMap(() => {
+              const newToken = this.getToken();
+              if (!newToken) return throwError(() => new Error('Token refresh failed'));
+              const newHeaders = new HttpHeaders({ Authorization: `Bearer ${newToken}` });
+              return this.http.delete<void>(`${this.distributeursUrl}${distributeurId}/`, { headers: newHeaders });
+            })
+          );
+        }
+        return throwError(() => error);
+      })
+    );
+  }
+
+  // PRODUITS
+    getProducts(): Observable<any[]> {
+  const token = this.getToken();
+  if (!token) {
+    return throwError(() => new Error('No token found'));
+  }
+  const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+  return this.http.get<any[]>(`${this.productUrl}`, { headers }).pipe(
+    catchError(error => {
+      if (error.status === 401) {
+        return this.refreshToken().pipe(
+          switchMap(() => {
+            const newToken = this.getToken();
+            if (!newToken) return throwError(() => new Error('Token refresh failed'));
+            const newHeaders = new HttpHeaders({ Authorization: `Bearer ${newToken}` });
+            return this.http.get<any[]>(`${this.distributeursUrl}`, { headers: newHeaders });
+          })
+        );
+      }
+      return throwError(() => error);
+    })
+  );
+}
+  createProduct(data: any){
+    const token = this.getToken();
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.post<any>(`${this.productUrl}`, data, {headers});
+  }
 }

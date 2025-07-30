@@ -1,161 +1,169 @@
 <div class="container mt-4">
   <h2 class="mb-3 text-principal">📦 Distributeurs & Produits</h2>
 
-<div class="container text-center mb-3">
+  <div class="container text-center mb-3">
     <div class="row">
-        <div class="col">
-
-            <button type="button" class="btn btn-primary rounded-pill m-1 p-1" data-bs-toggle="modal"  data-bs-target="#createDistributeur" (click)="openCreateModal()">
-                + Add
-            </button>
-        </div>
+      <div class="col">
+        <button type="button" class="btn btn-primary rounded-pill m-1 p-1" data-bs-toggle="modal" data-bs-target="#createDistributeur" (click)="openCreateModal()">
+          + Add
+        </button>
+      </div>
     </div>
-    <div class="row text-start gap-1">
-        @if (loading) {loading...}@else {@if (distributeurs && distributeurs.length > 0) {
 
-        <div class="accordion" id="accordionUsers">
+    <div class="row text-start gap-1">
+      @if (loading) {
+        loading...
+      } @else {
+        @if (distributeurs && distributeurs.length > 0) {
+          <div class="accordion" id="accordionUsers">
             @for (dist of distributeurs; track $index) {
-            <div class="accordion-item">
+              <div class="accordion-item">
                 <h2 class="accordion-header">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" [attr.data-bs-target]="'#collapse' + $index" aria-expanded="false" aria-controls="collapse">
-                        <div class="d-flex align-items-center justify-content-between">
-                            <h2> {{dist.nom}}</h2>
-                            <div>
-                                <button type="button" class="btn btn-sm btn-warning mr-2" data-bs-toggle="modal"  data-bs-target="#createDistributeur" (click)="openEditModal(dist)">Modifier</button>
-                                <button class="btn btn-sm btn-danger" >Supprimer</button>
-                            </div>
-                        </div>
-                    </button>
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" [attr.data-bs-target]="'#collapse' + $index" aria-expanded="false" aria-controls="collapse">
+                    <div class="d-flex align-items-center justify-content-between">
+                      <h2>{{ dist.nom }}</h2>
+                      <div>
+                        <button type="button" class="btn btn-sm btn-warning mr-2" data-bs-toggle="modal" data-bs-target="#createDistributeur" (click)="openEditModal(dist)">Modifier</button>
+                        <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" [attr.data-bs-target]="'#deleteConfirm' + $index">Supprimer</button>
+                      </div>
+                    </div>
+                  </button>
                 </h2>
                 <div [attr.id]="'collapse' + $index" class="accordion-collapse collapse">
-                    <div class="m-2">
-                        Contact:
-                        <span class="text-secondary">{{dist.telephone}}, {{dist.adress}}</span>
-                    </div>
-                    <div class="m-2">
-                        <h5>Produits</h5>
-                        <app-list
-                        [data]="dist.produits"
-                        [columns]="[
-                           { key: 'nom', label: 'Nom' },
-                           { key: 'description', label: 'Description' }
-                        ]"
-                        (edit)="modifier($event)"
-                        (delete)="supprimer($event)"> </app-list>
+                  <div class="m-2">
+                    Contact:
+                    <span class="text-secondary">{{ dist.telephone }}, {{ dist.adress }}</span>
+                  </div>
+                  <div class="m-2">
+                    <h5>Produits</h5>
+                    <app-list
+                      [data]="dist.produits"
+                      [columns]="[
+                        { key: 'nom', label: 'Nom' },
+                        { key: 'description', label: 'Description' }
+                      ]"
+                      (edit)="modifier($event)"
+                      (delete)="supprimer($event)">
+                    </app-list>
 
-                        <button type="button" class="btn btn-warning rounded-pill m-1 p-1" data-bs-toggle="modal" [attr.data-bs-target]="'#createProduct' + $index">
-                            + add
-                        </button>
-                    </div>
+                    <button type="button" class="btn btn-warning rounded-pill m-1 p-1" data-bs-toggle="modal" [attr.data-bs-target]="'#createProduct' + $index">
+                      + add
+                    </button>
+                  </div>
                 </div>
-            </div>
-            <!-- Modal product-->
-            <div class="modal fade" [attr.id]="'createProduct' + $index" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              </div>
+
+              <!-- Modal: Ajouter produit -->
+              <div class="modal fade" [attr.id]="'createProduct' + $index" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="exampleModalLabel">Create Product</h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <form [formGroup]="productForm" (ngSubmit)="submitAllProducts(dist.id)">
-  <div formArrayName="products">
-    @for (productGroup of products.controls; track $index ) {
-         <div
-
-      [formGroupName]="$index"
-      class="border rounded p-3 mb-2"
-    >
-      <h6>Produit {{ $index + 1 }}</h6>
-
-      <div class="mb-2">
-        <input
-          type="text"
-          class="form-control"
-          formControlName="name"
-          placeholder="Nom du produit"
-          required
-        />
-      </div>
-
-      <div class="mb-2">
-        <input
-          type="text"
-          class="form-control"
-          formControlName="description"
-          placeholder="Description"
-          required
-        />
-      </div>
-    </div>
-    }
-
-  </div>
-
-  <div class="d-flex justify-content-between mt-3">
-    <button type="button" class="btn btn-outline-primary" (click)="addProduct()">
-      ➕ Créer un autre produit
-    </button>
-
-     <button type="button" class="btn btn-outline-danger" (click)="deleteProduct($index)">
-      Supprimer une ligne
-    </button>
-    <button type="submit" class="btn btn-success" [disabled]="products.length === 0">
-      🟢 Créer
-    </button>
-  </div>
-</form>
-
-                          </div>
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h1 class="modal-title fs-5" id="exampleModalLabel">Create Product</h1>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                </div>
-            </div>
-            <!-- fin modal -->
-            }
-        </div> }@else {
-        <div class="container">
-            <div class="row justify-content-center">
-                <h3 class="text-center">Page vide</h3>
-                <p class="text-center">
-                    Creez un distributeur en cliquant sur le bouton "+add"
-                </p>
-            </div>
-        </div>} }
-    </div>
-</div>
+                    <div class="modal-body">
+                      <form [formGroup]="productForm" (ngSubmit)="submitAllProducts(dist.id)">
+                        <div formArrayName="products">
+                          @for (productGroup of products.controls; track $index) {
+                            <div [formGroupName]="$index" class="border rounded p-3 mb-2">
+                              <h6>Produit {{ $index + 1 }}</h6>
 
-<div class="modal fade" id="createDistributeur" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">
-          {{ isEditMode ? 'Modifier Distributeur' : 'Créer Distributeur' }}
-        </h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
-      </div>
-      <div class="modal-body">
-        <form class="needs-validation" [formGroup]="distributeurForm" (ngSubmit)="onSubmit()" novalidate>
-          <div class="mb-2">
-            <label for="nameDistributeur" class="visually-hidden">Nom</label>
-            <input type="text" class="form-control" formControlName="name" id="nameDistributeur" placeholder="Nom distributeur" required>
+                              <div class="mb-2">
+                                <input type="text" class="form-control" formControlName="name" placeholder="Nom du produit" required />
+                              </div>
+
+                              <div class="mb-2">
+                                <input type="text" class="form-control" formControlName="description" placeholder="Description" required />
+                              </div>
+                            </div>
+                          }
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-3">
+                          <button type="button" class="btn btn-outline-primary" (click)="addProduct()">
+                            ➕ Créer un autre produit
+                          </button>
+
+                          <button type="button" class="btn btn-outline-danger" (click)="deleteProduct($index)">
+                            Supprimer une ligne
+                          </button>
+
+                          <button type="submit" class="btn btn-success" [disabled]="products.length === 0">
+                            🟢 Créer
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Modal: Confirmation de suppression -->
+              <div class="modal fade" [attr.id]="'deleteConfirm' + $index" tabindex="-1" aria-labelledby="deleteLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h1 class="modal-title fs-5" id="deleteLabel">Confirmation</h1>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                    </div>
+                    <div class="modal-body">
+                      Voulez-vous vraiment supprimer ce distributeur ?
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                      <button type="button" class="btn btn-danger" data-bs-dismiss="modal" (click)="supprimer(dist)" [disabled]="isLoading">
+                        @if (isLoading) { Suppression... } @else { Supprimer }
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Fin modal suppression -->
+            }
           </div>
-          <div class="mb-2">
-            <label for="adress" class="visually-hidden">Adresse</label>
-            <input type="text" class="form-control" formControlName="adress" id="adress" placeholder="Adresse" required>
+        } @else {
+          <div class="container">
+            <div class="row justify-content-center">
+              <h3 class="text-center">Page vide</h3>
+              <p class="text-center">Creez un distributeur en cliquant sur le bouton "+add"</p>
+            </div>
           </div>
-          <div class="mb-2">
-            <label for="tel" class="visually-hidden">Téléphone</label>
-            <input type="text" class="form-control" formControlName="tel" id="tel" placeholder="Téléphone" required>
-          </div>
-          <div class="mt-3">
-            <button type="submit" class="btn btn-primary w-100" [disabled]="!distributeurForm.valid">
-              {{ isEditMode ? 'Mettre à jour' : 'Créer' }}
-            </button>
-          </div>
-        </form>
+        }
+      }
+    </div>
+  </div>
+
+  <div class="modal fade" id="createDistributeur" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">
+            {{ isEditMode ? 'Modifier Distributeur' : 'Créer Distributeur' }}
+          </h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+        </div>
+        <div class="modal-body">
+          <form class="needs-validation" [formGroup]="distributeurForm" (ngSubmit)="onSubmit()" novalidate>
+            <div class="mb-2">
+              <label for="nameDistributeur" class="visually-hidden">Nom</label>
+              <input type="text" class="form-control" formControlName="nom" id="nameDistributeur" placeholder="Nom distributeur" required>
+            </div>
+            <div class="mb-2">
+              <label for="adress" class="visually-hidden">Adresse</label>
+              <input type="text" class="form-control" formControlName="adress" id="adress" placeholder="Adresse" required>
+            </div>
+            <div class="mb-2">
+              <label for="tel" class="visually-hidden">Téléphone</label>
+              <input type="text" class="form-control" formControlName="telephone" id="tel" placeholder="Téléphone" required>
+            </div>
+            <div class="mt-3">
+              <button type="submit" class="btn btn-primary w-100" [disabled]="!distributeurForm.valid">
+                {{ isEditMode ? 'Mettre à jour' : 'Créer' }}
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   </div>
 </div>
-
- </div>

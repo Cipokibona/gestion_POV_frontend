@@ -2,11 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { catchError, forkJoin } from 'rxjs';
 import { Service } from '../../../services/service';
 import { FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { List } from '../../../reusable_components/list/list';
 
 @Component({
   selector: 'app-list-distributeur',
-  imports: [FormsModule,List,ReactiveFormsModule],
+  imports: [FormsModule, ReactiveFormsModule, List],
   templateUrl: './list-distributeur.html',
   styleUrl: './list-distributeur.scss'
 })
@@ -15,8 +16,10 @@ export class ListDistributeur implements OnInit{
   distributeurs: any[] = [];
   loading = true;
   error: string | null = null;
-  isEditMode = false; 
-editedDistributeurId: number | null = null;
+  isEditMode = false;
+  editedDistributeurId: number | null = null;
+
+  isLoading = false;
 
 openCreateModal() {
   this.isEditMode = false;
@@ -33,7 +36,7 @@ openEditModal(distributeur: any) {
     telephone: distributeur.telephone
   });
 }
-  
+
    distributeurForm = new FormGroup({
     nom: new FormControl('', Validators.required),
     adress: new FormControl('', Validators.required),
@@ -43,8 +46,8 @@ openEditModal(distributeur: any) {
   productForm!: FormGroup;
 
 
-  constructor(private fb: FormBuilder, private service: Service) {
-    
+  constructor(private fb: FormBuilder, private service: Service, private router: Router) {
+
   }
 
   ngOnInit() {
@@ -113,41 +116,43 @@ openEditModal(distributeur: any) {
     });
   }
 
-  // createDistributeur(){
-  //   const data = {
-  //     nom: this.distributeurForm.value.name,
-  //     telephone: this.distributeurForm.value.tel,
-  //     adress: this.distributeurForm.value.adress
-  //   };
-  //   this.service.createDistributeur(data).subscribe({
-  //     next: (data:any) => {
-  //       console.log('creation reussi de distributeur', data);
-  //     },
-  //     error: (err) => {
-  //       console.error('erreur de creation de distributeur',err)
-  //     }
-  //   });
-  //   location.reload();
-  // }
   onSubmit() {
   if (this.distributeurForm.invalid) return;
+  this.isLoading = true;
+  this.distributeurForm.markAllAsTouched();
 
   const formData = this.distributeurForm.value;
 
   if (this.isEditMode && this.editedDistributeurId !== null) {
     this.service.updateDistributeur(this.editedDistributeurId, formData).subscribe({
-      next: (res) => console.log('Modification réussie', res),
-      error: (err) => console.error('Erreur modif', err)
+      next: (res) => {
+        console.log('Modification réussie', res);
+        location.reload();
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.distributeurForm.markAsPristine();
+        console.error('Erreur modif', err);
+      }
     });
   } else {
     this.service.createDistributeur(formData).subscribe({
-      next: (res) => console.log('Création réussie', res),
-      error: (err) => console.error('Erreur création', err)
+      next: (res) => {
+        console.log('Création réussie', res);
+        location.reload();
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.distributeurForm.markAsPristine();
+        console.error('Erreur création', err);
+      }
     });
   }
 }
 
   createProduct(id:number){
+    this.isLoading = true;
+    this.productForm.markAllAsTouched();
     const data = {
       distributeur: Number(id),
       nom: this.productForm.value.name,
@@ -156,21 +161,35 @@ openEditModal(distributeur: any) {
     this.service.createProduct(data).subscribe({
       next: (data:any) => {
         console.log('creation reussi de product', data);
+        this.isLoading = false;
+        location.reload();
       },
       error: (err) => {
+        this.isLoading = false;
+        this.productForm.markAsPristine();
         console.error('erreur de creation de product',err)
       }
     });
     location.reload();
   }
-  
+
   modifier(item: any) {
     console.log('Modifier', item);
     // ouvre modal ou navigation
   }
 
   supprimer(item: any) {
-    console.log('Supprimer', item);
-    // appel au service pour supprimer
+    this.isLoading = true;
+    this.service.deleteDistributeur(item).subscribe({
+      next: (res) => {
+        console.log('Suppression réussie', res);
+        this.isLoading = false;
+        location.reload();
+      },
+      error: (err) => {
+        this.isLoading = false;
+        console.error('Erreur lors de la suppression', err);
+      }
+    });
   }
 }

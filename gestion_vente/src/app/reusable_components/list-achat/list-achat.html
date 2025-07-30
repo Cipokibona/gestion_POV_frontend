@@ -1,0 +1,81 @@
+<div class="table-responsive">
+  <table class="table table-striped table-bordered">
+    <thead>
+      <tr>
+        @for(col of columns; track $index) {
+          <th>{{ col.label }}</th>
+        }
+        <th>Quantité</th>
+        <th>Prix d'achat</th>
+        <th>Prix de vente</th>
+        <th>Date d'expiration</th>
+        <th>Etat</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for(item of paginatedData; track $index) {
+        <tr>
+          @for(col of columns; track $index) {
+            <td>{{ item[col.key] || '—' }}</td>
+          }
+
+          <td>
+            <input type="number"
+                   class="form-control"
+                   [(ngModel)]="paginatedData[$index].quantite"
+                   [min]="0"
+                   (ngModelChange)="paginatedData[$index].quantite = $event"
+                   placeholder="Quantité">
+          </td>
+
+          <!-- Input prix achat -->
+          <td>
+            <input type="number"
+                   class="form-control"
+                   [(ngModel)]="paginatedData[$index].prix_achat"
+                   placeholder="Prix d'achat">
+          </td>
+
+          <!-- Input prix vente -->
+          <td>
+            <input type="number"
+                   class="form-control"
+                   [(ngModel)]="paginatedData[$index].prix_vente"
+                   placeholder="Prix de vente">
+          </td>
+
+          <!-- Input date expiration -->
+          <td>
+            <input type="date"
+                   class="form-control"
+                   [(ngModel)]="paginatedData[$index].date_expiration">
+          </td>
+          <td>
+            <button
+              class="btn btn-sm btn-light"
+              [ngClass]="{'btn-light': !paginatedData[$index]._achatConfirme,'btn-success': paginatedData[$index]._achatConfirme}"
+              [disabled]="!champsRemplis(paginatedData[$index])"
+              (click)="onAchat(item)">
+              A acheter
+            </button>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
+
+<div class="d-flex justify-content-end mt-3">
+  <div class="form-group me-3">
+    <label>Éléments par page :</label>
+    <select class="form-control" [(ngModel)]="itemsPerPage">
+      @for(option of [10, 20, 30, 50]; track $index) {
+        <option [value]="option">{{ option }}</option>
+      }
+    </select>
+  </div>
+  <div class="btn-group">
+    <button class="btn btn-secondary" (click)="previousPage()" [disabled]="currentPage === 1">Précédent</button>
+    <button class="btn btn-secondary" (click)="nextPage()" [disabled]="currentPage === totalPages">Suivant</button>
+  </div>
+</div>

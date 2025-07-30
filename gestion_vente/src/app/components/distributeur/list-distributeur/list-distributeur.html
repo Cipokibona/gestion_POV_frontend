@@ -36,19 +36,32 @@
                   </div>
                   <div class="m-2">
                     <h5>Produits</h5>
-                    <app-list
+                    <button type="button" class="btn btn-sm btn-primary m-2" (click)="faireAchat()">
+                      Faire un achat
+                    </button>
+                    @if (isAchatMode) {
+                      <app-list-achat
                       [data]="dist.produits"
                       [columns]="[
                         { key: 'nom', label: 'Nom' },
                         { key: 'description', label: 'Description' }
-                      ]"
-                      (edit)="modifier($event)"
-                      (delete)="supprimerProduit($event)">
-                    </app-list>
+                      ]">
+                    </app-list-achat>
+                    }@else {
+                      <app-list
+                        [data]="dist.produits"
+                        [columns]="[
+                          { key: 'nom', label: 'Nom' },
+                          { key: 'description', label: 'Description' }
+                        ]"
+                        (edit)="modifier($event)"
+                        (delete)="supprimerProduit($event)">
+                      </app-list>
 
                     <button type="button" class="btn btn-warning rounded-pill m-1 p-1" data-bs-toggle="modal" [attr.data-bs-target]="'#createProduct' + $index">
                       + add
                     </button>
+                    }
                   </div>
                 </div>
               </div>

@@ -4,10 +4,11 @@ import { Service } from '../../../services/service';
 import { FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { List } from '../../../reusable_components/list/list';
+import { ListAchat } from '../../../reusable_components/list-achat/list-achat';
 
 @Component({
   selector: 'app-list-distributeur',
-  imports: [FormsModule, ReactiveFormsModule, List],
+  imports: [FormsModule, ReactiveFormsModule, List, ListAchat],
   templateUrl: './list-distributeur.html',
   styleUrl: './list-distributeur.scss'
 })
@@ -22,6 +23,8 @@ export class ListDistributeur implements OnInit{
   isLoading = false;
 
   selectedProductId: number | null = null;
+
+  isAchatMode = false;
 
 openCreateModal() {
   this.isEditMode = false;
@@ -214,5 +217,10 @@ openEditModal(distributeur: any) {
         console.error('Erreur lors de la suppression', err);
       }
     });
+  }
+
+  faireAchat(){
+    this.isAchatMode = true;
+    console.log('Mode achat activé');
   }
 }

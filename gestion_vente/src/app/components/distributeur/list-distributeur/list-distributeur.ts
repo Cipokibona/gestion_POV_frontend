@@ -26,6 +26,8 @@ export class ListDistributeur implements OnInit{
 
   isAchatMode = false;
 
+  listeAchat: any[] = [];
+
 openCreateModal() {
   this.isEditMode = false;
   this.editedDistributeurId = null;
@@ -205,7 +207,24 @@ openEditModal(distributeur: any) {
   }
 
   listAchat(item: any) {
-    console.log('Liste achat pour', item);
+    const existe = this.listeAchat.find(prod => prod.id === item.id);
+
+    if (!existe) {
+      const produitAchat = {
+        id: item.id,
+        nom: item.nom,
+        description: item.description,
+        quantite: item.quantite ?? 0,
+        prix_achat: item.prix_achat ?? 0,
+        prix_vente: item.prix_vente ?? 0,
+        date_expiration: item.date_expiration ?? null,
+        _achatConfirme: true
+      };
+      this.listeAchat.push(produitAchat);
+      console.log('Produit ajouté à la liste d’achat :', this.listeAchat);
+    } else {
+      console.log('Produit déjà dans la liste d’achat');
+    }
   }
 
   supprimer(item: any) {

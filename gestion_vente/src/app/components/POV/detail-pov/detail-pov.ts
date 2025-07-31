@@ -80,9 +80,17 @@ export class DetailPov implements OnInit {
   }
 
   redirigerProduit(item: any){
+    if (!this.selectedPov || !this.quantiteRedirigee || this.quantiteRedirigee <= 0) {
+      alert('Veuillez sélectionner un point de vente de destination et une quantité valide.');
+      return;
+    }
+
+    if (this.quantiteRedirigee > item.quantite) {
+      alert(`La quantité à rediriger (${this.quantiteRedirigee}) dépasse le stock actuel (${item.quantite}).`);
+      return;
+    }
+
     this.isLoading = true;
-    
-    console.log('Produit a rediriger', item);
   }
 
   retirerDefectueux(item: any){

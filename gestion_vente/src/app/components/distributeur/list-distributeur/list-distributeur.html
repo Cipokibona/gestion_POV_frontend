@@ -49,7 +49,11 @@
                       ]"
                       (achat)="listAchat($event)">
                     </app-list-achat>
-                    <button type="button" class="btn btn-sm btn-success m-2" (click)="faireAchat()" [disabled]="listeAchat.length === 0">
+                    <button type="button"
+                            class="btn btn-sm btn-success m-2"
+                            data-bs-toggle="modal"
+                            data-bs-target="#achatModal"
+                            [disabled]="listeAchat.length === 0">
                       Finaliser l'achat
                     </button>
                     }@else {
@@ -99,7 +103,7 @@
 
                         <div class="d-flex justify-content-between mt-3">
                           <button type="button" class="btn btn-outline-primary" (click)="addProduct()">
-                            ➕ Créer un autre produit
+                            ➕ Ajouter plusieurs produits
                           </button>
 
                           <button type="button" class="btn btn-outline-danger" (click)="deleteProduct($index)">
@@ -142,6 +146,112 @@
                 </div>
               </div>
               <!-- Fin modal suppression -->
+            
+           <!-- Modal pour finaliser l'achat -->
+            <!-- Modal -->
+            <div class="modal fade" id="achatModal" tabindex="-1" aria-labelledby="achatModalLabel" aria-hidden="true">
+              <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="achatModalLabel">Finaliser l'achat</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                  </div>
+                <form [formGroup]="achatForm" (ngSubmit)="validerAchat(dist.id)">
+                  <div class="modal-body">
+
+                    <!-- Liste des produits -->
+                    <h6>Produits sélectionnés :</h6>
+                    <table class="table table-striped table-bordered align-middle">
+                        <thead class="table-light">
+                          <tr>
+                            <th>Nom</th>
+                            <th>Description</th>
+                            <th>Quantité</th>
+                            <th>Prix d'achat (FBu)</th>
+                            <th>Prix de vente (FBu)</th>
+                            <th>Date d'expiration</th>
+                            <th>Total (FBu)</th>
+                            <th>Action</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          @for (produit of listeAchat; track $index) {
+                            <tr>
+                              <td>{{ produit.nom }}</td>
+                              <td>{{ produit.description }}</td>
+                              <td>{{ produit.quantite }}</td>
+                              <td>{{ produit.prix_achat | number:'1.0-0' }}</td>
+                              <td>{{ produit.prix_vente | number:'1.0-0' }}</td>
+                              <td>
+                                {{ produit.date_expiration ? (produit.date_expiration | date:'dd/MM/yyyy') : 'Non spécifiée' }}
+                              </td>
+                              <td>{{ (produit.quantite * produit.prix_achat) | number:'1.0-0' }}</td>
+                              <td>
+                                <button type="button"
+                                        class="btn btn-sm btn-danger"
+                                        aria-label="Retirer"
+                                        (click)="retirerProduit(produit)">
+                                  <i class="fa fa-trash"></i>
+                                </button>
+                              </td>
+                            </tr>
+                          }
+                        </tbody>
+                        <tfoot>
+                          <tr class="table-secondary fw-bold">
+                            <td colspan="6" class="text-end">Prix total :</td>
+                            <td colspan="2">
+                              {{ totalAchat | number:'1.0-0' }} FBu
+                            </td>
+                          </tr>
+                        </tfoot>
+                      </table>
+
+                    <!-- Sélection du point de vente -->
+
+                    <div class="mb-3">
+                      <label for="pointDeVenteSelect" class="form-label">Point de vente</label>
+                      <select class="form-select" id="pointDeVenteSelect" formControlName="pointDeVente">
+                        @for( pdv of pointsDeVente; track $index) {
+                        <option [value]="pdv.id">{{ pdv.nom }}</option>
+                        }
+                      </select>
+                    </div>
+
+                    <!-- Sélection de la caisse -->
+                    <div class="mb-3">
+                      <label for="caisseSelect" class="form-label">Caisse</label>
+                      <select class="form-select" id="caisseSelect" formControlName="caisse">
+                        @for( caisse of caisses; track $index) {
+                        <option [value]="caisse.id">{{ caisse.montant_total | number:'1.0-0'  }} FBu</option>
+                        }
+                      </select>
+                    </div>
+
+                    <!-- Champ bordereau -->
+                    <div class="mb-3">
+                      <label for="bordereauInput" class="form-label">Numéro de bordereau</label>
+                      <input type="text" class="form-control" id="bordereauInput" formControlName="bordereau" placeholder="Ex: BORD-00123">
+                    </div>
+
+                  </div>
+
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-primary" (click)="validerAchat(dist.id)" [disabled]="!achatForm.valid || isLoading">
+                      @if (isLoading) {
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                      } @else {
+                        <span>✅</span>
+                      }
+                      Valider l'achat
+                    </button>
+                  </div>
+                  </form>
+                </div>
+              </div>
+            </div>
             }
           </div>
         } @else {
@@ -195,3 +305,6 @@
     </div>
   </div>
 </div>
+
+
+

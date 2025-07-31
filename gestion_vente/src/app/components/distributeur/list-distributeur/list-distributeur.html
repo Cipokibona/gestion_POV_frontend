@@ -36,9 +36,10 @@
                   </div>
                   <div class="m-2">
                     <h5>Produits</h5>
+                    @if(!isAchatMode){
                     <button type="button" class="btn btn-sm btn-primary m-2" (click)="faireAchat()">
                       Faire un achat
-                    </button>
+                    </button>}
                     @if (isAchatMode) {
                       <app-list-achat
                       [data]="dist.produits"
@@ -48,7 +49,7 @@
                       ]"
                       (achat)="listAchat($event)">
                     </app-list-achat>
-                    <button type="button" class="btn btn-sm btn-success m-2" (click)="faireAchat()">
+                    <button type="button" class="btn btn-sm btn-success m-2" (click)="faireAchat()" [disabled]="listeAchat.length === 0">
                       Finaliser l'achat
                     </button>
                     }@else {

@@ -2,37 +2,145 @@
   <div class="d-flex justify-content-between align-items-center mb-4">
     <a routerLink="/list-pov" class="btn btn-secondary">⬅️ Retour</a>
   </div>
+
   <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="principal">📍 Point de vente : {{povData?.name}}</h2>
-    <a routerLink="/form-pov/{{povData?.id}}" class="button principal">
-      Modifier le point de vente
-    </a>
+    <h2 class="principal">📍 Point de vente : {{ povData?.name }}</h2>
+    <a routerLink="/form-pov/{{ povData?.id }}" class="button principal">Modifier le point de vente</a>
   </div>
 
   <div class="mb-4">
-    <p><strong>💰 Caisse :</strong> {{povData?.caisse.montant_total |  number:'1.0-0' }} Fbu</p>
+    <p><strong>💰 Caisse :</strong> {{ povData?.caisse.montant_total | number:'1.0-0' }} Fbu</p>
     <p><strong>👤 Responsable :</strong> {{ povData?.responsable?.user?.first_name }} {{ povData?.responsable?.user?.last_name }}</p>
   </div>
 
   <div class="mb-5">
     <h4 class="principal">📦 Produits en stock</h4>
+
     <table class="table table-hover">
       <thead>
         <tr>
-          <th>Nom</th>
-          <th>Quantité</th>
-          <th>Catégorie</th>
+          <th>Produits</th>
+          <th>Date d'expiration</th>
+          @if (userData?.role_display === 'gerant') {
+            <th>Prix d'achat</th>
+          }
+          <th>Prix de vente</th>
+          <th>En stock</th>
+          @if (userData?.role_display === 'gerant') {
+            <th>Gain potentiel</th>
+            <th>Action</th>
+          }
         </tr>
       </thead>
+
       <tbody>
-        @for(product of povData?.stock; track product.id) {
+        @for (product of povData?.stocks; track product.id) {
           <tr>
-            <td>{{ product.nom }}</td>
-            <td>{{ product.quantite }}</td>
-            <td>{{ product.categorie }}</td>
+            <td>{{ product.produit_nom }}</td>
+            <td>{{ product.date_expiration | date:'dd MMM yyyy' }}</td>
+            @if (userData?.role_display === 'gerant') {
+              <td>{{ product.prix_achat | number:'1.0-0' }} Fbu</td>
+            }
+            <td>{{ product.prix_vente | number:'1.0-0' }} Fbu</td>
+            <td>{{ product.quantite }} box</td>
+            @if (userData?.role_display === 'gerant') {
+              <td>{{ product.quantite * product.prix_vente | number:'1.0-0' }} Fbu</td>
+              <td>
+                <button
+                  class="btn btn-sm btn-warning me-2"
+                  data-bs-toggle="modal"
+                  data-bs-target="#modalRediriger"
+                  (click)="selectedProduct = product">
+                  Rediriger
+                </button>
+                <button
+                  class="btn btn-sm btn-danger"
+                  data-bs-toggle="modal"
+                  data-bs-target="#modalDefectueux"
+                  (click)="selectedProduct = product">
+                  Retirer (défectueux)
+                </button>
+              </td>
+            }
+          </tr>
+        }
+
+        @if (userData?.role_display === 'gerant') {
+          <tr class="fw-bold">
+            <td colspan="5" class="text-end">Total rendement attendu :</td>
+            <td colspan="2">{{ totalRendementAttendu | number:'1.0-0' }} Fbu</td>
           </tr>
         }
       </tbody>
     </table>
+  </div>
+
+  <!-- 🔁 Modal Rediriger -->
+  <div class="modal fade" id="modalRediriger" tabindex="-1" aria-labelledby="modalRedirigerLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Rediriger le produit</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="mb-3">
+              <label for="povDestination" class="form-label">Point de vente destination</label>
+              <select
+                id="povDestination"
+                class="form-select"
+                name="povDestination">
+                @for (pov of listPov; track pov.id) {
+                  <option [value]="pov.id">{{ pov.nom }}</option>
+                }
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="quantiteRedirigee" class="form-label">Quantité à rediriger</label>
+              <input
+                type="number"
+                min="1"
+                class="form-control"
+                id="quantiteRedirigee"
+                name="quantiteRedirigee">
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+          <button type="button" class="btn btn-warning" (click)="redirigerProduit(selectedProduct)">Confirmer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🔧 Modal Défectueux -->
+  <div class="modal fade" id="modalDefectueux" tabindex="-1" aria-labelledby="modalDefectueuxLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Retirer comme défectueux</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="mb-3">
+              <label for="quantiteDefectueuse" class="form-label">Quantité défectueuse</label>
+              <input
+                type="number"
+                min="1"
+                class="form-control"
+                id="quantiteDefectueuse"
+                name="quantiteDefectueuse">
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+          <button type="button" class="btn btn-danger" (click)="retirerDefectueux(selectedProduct)">Confirmer</button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

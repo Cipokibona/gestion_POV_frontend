@@ -14,6 +14,15 @@ export class DetailPov implements OnInit {
 
   povData: any;
 
+  listPov: any;
+
+  selectedProduct: any = null;
+  selectedPov: number | null = null;
+  quantiteRedirigee: number = 1;
+  quantiteDefectueuse: number = 1;
+
+  isLoading: boolean = false;
+
   constructor(
     private service: Service,
     private route: ActivatedRoute
@@ -21,6 +30,8 @@ export class DetailPov implements OnInit {
 
   ngOnInit(): void {
     this.getPovById();
+    this.getUser();
+    this.getAllPov();
   }
 
   getPovById() {
@@ -38,4 +49,43 @@ export class DetailPov implements OnInit {
     }
   }
 
+  getAllPov(){
+    const idParam = this.route.snapshot.paramMap.get('id');
+    this.service.getAllPov().subscribe({
+      next: (povList:any) => {
+        this.listPov = povList.filter((pov:any) => pov.id !== Number(idParam));
+      },
+      error: (err:any) => {
+        console.log('Error de chargement de all pov', err);
+      }
+    })
+  }
+
+  getUser(){
+    this.service.getUser().subscribe({
+      next: user => {
+        this.userData = user;
+        console.log('User connecté:', this.userData);
+      },
+      error: err => console.error('Erreur:', err)
+    });
+  }
+
+  get totalRendementAttendu(): number {
+    if (!this.povData?.stocks) return 0;
+
+    return this.povData.stocks.reduce((total: number, item: any) => {
+      return total + (item.quantite * item.prix_vente);
+    }, 0);
+  }
+
+  redirigerProduit(item: any){
+    this.isLoading = true;
+    
+    console.log('Produit a rediriger', item);
+  }
+
+  retirerDefectueux(item: any){
+    console.log('Produit defectueux', item);
+  }
 }

@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, map, Observable, switchMap, tap, throwError } from 'rxjs';
@@ -669,6 +669,15 @@ export class Service {
         return throwError(() => error);
       })
     );
+  }
+
+  searchStockProduit(filters: any): Observable<any[]> {
+    const params = new HttpParams({ fromObject: filters });
+    return this.http.get<any[]>(`${this.stockPovUrl}`, { params });
+  }
+
+  getStockByProduitAndPov(produitId: number, povId: number): Observable<any> {
+    return this.http.get<any[]>(`${this.stockPovUrl}?produit_id=${produitId}&point_de_vente_id=${povId}`);
   }
 
   updateStock(stockId: number, data: any): Observable<any> {

@@ -76,6 +76,7 @@
   </div>
 
   <!-- 🔁 Modal Rediriger -->
+   <form [formGroup]="deliverForm" (ngSubmit)="redirigerProduit(selectedProduct)">
   <div class="modal fade" id="modalRediriger" tabindex="-1" aria-labelledby="modalRedirigerLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -84,13 +85,13 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
         </div>
         <div class="modal-body">
-          <form>
             <div class="mb-3">
               <label for="povDestination" class="form-label">Point de vente destination</label>
               <select
                 id="povDestination"
                 class="form-select"
-                name="povDestination">
+                name="povDestination"
+                formControlName="pov">
                 @for (pov of listPov; track pov.id) {
                   <option [value]="pov.id">{{ pov.nom }}</option>
                 }
@@ -103,19 +104,28 @@
                 min="1"
                 class="form-control"
                 id="quantiteRedirigee"
+                formControlName="quantite"
                 name="quantiteRedirigee">
             </div>
-          </form>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-          <button type="button" class="btn btn-warning" (click)="redirigerProduit(selectedProduct)">Confirmer</button>
+          <button type="submit" class="btn btn-warning" [disabled]="deliverForm.invalid || isLoading">
+            @if(isLoading) {
+              <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            }@else {
+              <span>✅</span>
+            }
+            Confirmer
+          </button>
         </div>
       </div>
     </div>
   </div>
+</form>
 
   <!-- 🔧 Modal Défectueux -->
+   <form [formGroup]="defectueuxForm" (ngSubmit)="retirerDefectueux(selectedProduct)">
   <div class="modal fade" id="modalDefectueux" tabindex="-1" aria-labelledby="modalDefectueuxLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -124,7 +134,6 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
         </div>
         <div class="modal-body">
-          <form>
             <div class="mb-3">
               <label for="quantiteDefectueuse" class="form-label">Quantité défectueuse</label>
               <input
@@ -132,15 +141,23 @@
                 min="1"
                 class="form-control"
                 id="quantiteDefectueuse"
+                formControlName="quantite"
                 name="quantiteDefectueuse">
             </div>
-          </form>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-          <button type="button" class="btn btn-danger" (click)="retirerDefectueux(selectedProduct)">Confirmer</button>
+          <button type="submit" class="btn btn-danger" [disabled]="defectueuxForm.invalid || isLoading">
+            @if(isLoading) {
+              <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            }@else {
+              <span>✅</span>
+            }
+            Confirmer
+          </button>
         </div>
       </div>
     </div>
   </div>
+</form>
 </div>

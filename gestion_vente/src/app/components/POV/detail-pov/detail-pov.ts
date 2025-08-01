@@ -3,7 +3,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Service } from '../../../services/service';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { switchMap } from 'rxjs';
+import { finalize, forkJoin, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-detail-pov',
@@ -93,75 +93,100 @@ export class DetailPov implements OnInit {
     }, 0);
   }
 
-  redirigerProduit(item: any) {
-    console.log('Redirection lancée pour', item);
+  redirigerProduit(item: any): void {
+    // 1. Validation initiale des données et état de chargement
     this.isLoading = true;
-
     const quantite = this.deliverForm.value.quantite;
     const povCible_id = Number(this.deliverForm.value.pov);
     const povSource_id = Number(this.route.snapshot.paramMap.get('id'));
 
-    if (!item?.id || !povCible_id || !quantite) {
-      alert('Informations incomplètes pour rediriger le produit.');
+    if (!item?.id || !povCible_id || !quantite || isNaN(povCible_id) || isNaN(povSource_id)) {
+      alert('Informations de redirection incomplètes ou invalides.');
       this.isLoading = false;
       return;
     }
 
+    // 2. Recherche et validation du stock source
     this.service.getStockByProduitAndPov(item.id, povSource_id).pipe(
       switchMap((stocks) => {
-        if (!stocks.length) throw new Error('Stock source introuvable');
-        const stockSource = stocks[0];
-        const newQuantite = stockSource.quantite - quantite;
+        const stockSource = stocks?.[0];
+        if (!stockSource) {
+          throw new Error("Stock source introuvable.");
+        }
 
+        const newQuantite = stockSource.quantite - quantite;
+        console.log('Stock source ID:', stockSource.id);
+        console.log('Quantité actuelle en stock:', stockSource.quantite);
+        console.log('Quantité demandée par l\'utilisateur:', quantite);
+        console.log('Nouvelle quantité après redirection:', newQuantite);
         if (newQuantite < 0) {
           throw new Error("Quantité insuffisante dans le stock source.");
         }
 
-        // 1. Mise à jour du stock source
-        return this.service.updateStock(stockSource.id, { quantite: newQuantite }).pipe(
-          // 2. Vérification du stock cible existant
-          switchMap(() => {
-            const filtre = {
-              produit: item.id,
-              point_de_vente: povCible_id,
-              prix_achat: item.prix_achat,
-              prix_vente: item.prix_vente,
-              date_expiration: item.date_expiration
-            };
-            return this.service.searchStockProduit(filtre);
-          }),
+        // 3. Mise à jour du stock source
+        const newDataStockSource = {
+          produit: item.id,
+          point_de_vente: povSource_id,
+          prix_achat: item.prix_achat,
+          prix_vente: item.prix_vente,
+          date_expiration: item.date_expiration,
+          quantite: newQuantite
+        }
+        const updateStockSource$ = this.service.createStock(newDataStockSource);
 
-          // 3. Mise à jour ou création du stock cible
-          switchMap((stocksTrouves) => {
-            if (stocksTrouves.length) {
-              const stockCible = stocksTrouves[0];
-              const quantiteTotale = stockCible.quantite + quantite;
-              return this.service.updateStock(stockCible.id, { quantite: quantiteTotale });
-            } else {
-              const nouveauStock = {
-                produit: item.id,
-                point_de_vente: povCible_id,
-                prix_achat: item.prix_achat,
-                prix_vente: item.prix_vente,
-                date_expiration: item.date_expiration,
-                quantite: quantite
-              };
-              return this.service.createStock(nouveauStock);
-            }
-          })
-        );
-      })
+        // 4. Recherche du stock cible
+        const filtre = {
+          produit: item.id,
+          point_de_vente: povCible_id,
+          prix_achat: item.prix_achat,
+          prix_vente: item.prix_vente,
+          date_expiration: item.date_expiration
+        };
+        const searchStockCible$ = this.service.searchStockProduit(filtre);
+
+        // 5. Exécution parallèle des requêtes pour optimiser
+        return forkJoin({
+          updateResult: updateStockSource$,
+          stocksTrouves: searchStockCible$
+        });
+      }),
+      // 6. Mise à jour ou création du stock cible en fonction du résultat parallèle
+      switchMap(({ stocksTrouves }) => {
+        const stockCible = stocksTrouves?.[0];
+        if (stockCible) {
+          const quantiteTotale = stockCible.quantite + quantite;
+          const newDataStockCible = {
+            produit: item.id,
+            point_de_vente: povCible_id,
+            prix_achat: item.prix_achat,
+            prix_vente: item.prix_vente,
+            date_expiration: item.date_expiration,
+            quantite: quantiteTotale
+          };
+          return this.service.createStock(newDataStockCible);
+        } else {
+          const nouveauStock = {
+            produit: item.id,
+            point_de_vente: povCible_id,
+            prix_achat: item.prix_achat,
+            prix_vente: item.prix_vente,
+            date_expiration: item.date_expiration,
+            quantite: quantite
+          };
+          return this.service.createStock(nouveauStock);
+        }
+      }),
+      finalize(() => this.isLoading = false) // Gère l'état de chargement à la fin, qu'il y ait une erreur ou non
     ).subscribe({
       next: () => {
-        this.isLoading = false;
         alert('Produit redirigé avec succès.');
         this.closeModal();
         this.loadData();
       },
       error: (err) => {
-        this.isLoading = false;
-        console.error(err);
-        alert('Erreur lors de la redirection : ' + err.message);
+        console.error("Erreur détaillée:", err);
+        const message = err.message || "Une erreur inconnue est survenue.";
+        alert('Erreur lors de la redirection : ' + message);
       }
     });
   }
